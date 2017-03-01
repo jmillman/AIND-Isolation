@@ -224,8 +224,7 @@ class HumanPlayer():
 
         return legal_moves[index]
 
-
-if __name__ == "__main__":
+def their_test():
     from isolation import Board
 
     # create an isolation board (by default 7x7)
@@ -260,3 +259,51 @@ if __name__ == "__main__":
     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
     print(game.to_string())
     print("Move history:\n{!s}".format(history))
+
+def human_vs_random():
+    from isolation import Board
+
+    # create an isolation board (by default 7x7)
+    player1 = RandomPlayer()
+    player2 = HumanPlayer()
+    game = Board(player1, player2)
+
+    print(game.to_string())
+    winner, history, outcome = game.play(10000000)
+    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
+    print(game.to_string())
+    print("Move history:\n{!s}".format(history))
+
+def human_vs_random():
+    from isolation import Board
+
+    # create an isolation board (by default 7x7)
+    player1 = RandomPlayer()
+    player2 = HumanPlayer()
+    game = Board(player1, player2)
+
+    print(game.to_string())
+    winner, history, outcome = game.play(10000000)
+    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
+    print(game.to_string())
+    print("Move history:\n{!s}".format(history))
+
+def test():
+    from isolation import Board
+
+    # create an isolation board (by default 7x7)
+    player1 = RandomPlayer()
+    player2 = RandomPlayer()
+    game = Board(player1, player2)
+    legal_moves_player1 = game.get_legal_moves()
+    print("# of Moves Player 1: {}\nLegal Moves Player 1: {}\n".format(len(legal_moves_player1), legal_moves_player1))
+
+    tmp_game = game.forecast_move(legal_moves_player1[0])
+    tmp_moves_player1 = tmp_game.get_legal_moves()
+    print("# of Moves Player 1: {}\nLegal Moves Player 1: {}\n".format(len(tmp_moves_player1), tmp_moves_player1))
+
+
+if __name__ == "__main__":
+    # their_test()
+    # human_vs_random()
+    test()
