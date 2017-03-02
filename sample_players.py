@@ -224,6 +224,7 @@ class HumanPlayer():
 
         return legal_moves[index]
 
+
 def their_test():
     from isolation import Board
 
@@ -288,22 +289,210 @@ def human_vs_random():
     print(game.to_string())
     print("Move history:\n{!s}".format(history))
 
+
+
 def test():
     from isolation import Board
 
     # create an isolation board (by default 7x7)
     player1 = RandomPlayer()
     player2 = RandomPlayer()
-    game = Board(player1, player2)
-    legal_moves_player1 = game.get_legal_moves()
-    print("# of Moves Player 1: {}\nLegal Moves Player 1: {}\n".format(len(legal_moves_player1), legal_moves_player1))
+    board = Board(player1, player2)
 
-    tmp_game = game.forecast_move(legal_moves_player1[0])
-    tmp_moves_player1 = tmp_game.get_legal_moves()
-    print("# of Moves Player 1: {}\nLegal Moves Player 1: {}\n".format(len(tmp_moves_player1), tmp_moves_player1))
+
+    board.apply_move((0, 0))
+    legal_moves_player2 = board.get_legal_moves()
+    board.apply_move(legal_moves_player2[0])
+    legal_moves_player1 = board.get_legal_moves()
+    return
+
+
+    print(board.to_string())
+
+    legal_moves_player1 = board.get_legal_moves()
+    # print("# of Moves Player 1: {}\nLegal Moves Player 1: {}\n".format(len(legal_moves_player1), legal_moves_player1))
+    print("Moves before start {}".format(len(legal_moves_player1)))
+    print("Moves {}".format(legal_moves_player1))
+    test_moves(board, legal_moves_player1, 2, player1)
+
+    return
+    iterations = 0
+    for tmp_move_level1_player1 in legal_moves_player1:
+        tmp_game_after_player1_first_move = game.forecast_move(tmp_move_level1_player1)
+        tmp_moves_player2 = tmp_game_after_player1_first_move.get_legal_moves()
+        print("Player 2 {} : {}".format(tmp_move_level1_player1, len(tmp_moves_player2)))
+        for tmp_move_level1_player2 in tmp_moves_player2:
+            iterations +=1
+            tmp_game_after_player2_first_move = tmp_game_after_player1_first_move.forecast_move(tmp_move_level1_player2)
+            tmp_moves_player1_after_player2_first_move = tmp_game_after_player2_first_move.get_legal_moves()
+            print(">>>>>Player 2 {} : {}".format(tmp_move_level1_player2, len(tmp_moves_player1_after_player2_first_move)))
+
+    print("iterations {}".format(iterations))
+
+
+class MyMove(object):
+    def __init__(self, board, player_is_me, current_move, depth, counter=0):
+        global number_of_nodes
+        number_of_nodes = number_of_nodes + 1
+        self.board = board
+        self.player_is_me = player_is_me
+        self.current_move = current_move
+        self.depth = depth
+        self.counter = counter
+        self.opponents_moves = []
+
+        self.board_after_move = self.board.forecast_move(self.current_move)
+        self.create_opponents_moves()
+
+        print("player_is_me: {} current_move {} depth {} counter {}".format(self.player_is_me, self.current_move, self.depth, self.counter))
+    def create_opponents_moves(self):
+        # while self.counter <= self.depth:
+            for potential_move in self.board.get_legal_moves():
+                self.opponents_moves.append(MyMove(self.board_after_move, self.player_is_me, potential_move, self.depth, self.counter))
+            # self.counter = self.counter + 1
+
+
+    def display(self):
+        print("player_is_me: {} current_move {} depth {} counter {}".format(self.player_is_me, self.current_move, self.depth, self.counter))
+        own_moves = len(self.board.get_legal_moves(self.board.active_player))
+        opp_moves = len(self.board.get_legal_moves(self.board.inactive_player))
+        print("own_moves: {}, opp_moves: {}".format(own_moves, opp_moves))
+        improved_my_score = improved_score(self.board, self.board.active_player)
+        print("improved_my_score: {}".format(improved_my_score))
+        # print(self.board_after_move.to_string())
+        print("--------------Children-----------------")
+        for move in self.opponents_moves:
+            move.display()
+
+
+def test_nodes():
+    import time
+
+    start_time = time.time()
+
+    global number_of_nodes
+    number_of_nodes = 0
+    from isolation import Board
+    player1 = RandomPlayer()
+    player2 = RandomPlayer()
+    board = Board(player1, player2)
+    available_moves = board.get_legal_moves(player1)
+    board.apply_move(available_moves[0])
+    available_moves = board.get_legal_moves(player2)
+    board.apply_move(available_moves[0])
+    print("Starting board")
+    print(board.to_string())
+
+    available_moves = board.get_legal_moves(player1)
+    print("My available_moves {}".format(len(available_moves)))
+    print("{}".format(available_moves))
+    my_moves = []
+    # for potential_move in available_moves:
+    #     my_moves.append(MyMove(board, True, potential_move, 0))
+
+    my_moves.append(MyMove(board, True, available_moves[0], 0))
+
+    end_time = time.time()
+    time_taken = end_time - start_time
+
+
+    print("time taken {}".format(time_taken))
+    print("number of nodes {}".format(number_of_nodes))
+
+    print("--------------------------------------------")
+    for move in my_moves:
+        move.display()
+
+def print_possible_moves(board, player1, player2):
+    player1_moves = board.get_legal_moves(player1)
+    player2_moves = board.get_legal_moves(player2)
+    print("player1 {}: {} player2 {}: {}".format(len(player1_moves), player1_moves, len(player2_moves), player2_moves))
+
+
+class SingleMove(object):
+    def __init__(self, board, current_move, active_player, inactive_player):
+        self.board = board
+        self.current_move = current_move
+        self.active_player = active_player
+        self.inactive_player = inactive_player
+        self.improved_score_pre_move = improved_score(self.board, self.active_player)
+        self.board_post_move = self.board.forecast_move(current_move)
+        self.improved_score_post_move = improved_score(self.board_post_move, self.active_player)
+        print("current_move: {}".format(current_move))
+        print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
+        print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
+        print('')
+
+    def get_new_board(self):
+        return self.board_post_move
+
+    def get_my_score_post_move(self):
+        return self.improved_score_post_move
+    def get_my_move(self):
+        return self.current_move
+
+
+class GetMove(object):
+    def __init__(self, board, player_is_me, depth, counter=0):
+        global number_of_nodes
+        self.board = board
+        self.player_is_me = player_is_me
+        self.depth = depth
+        self.counter = counter
+        self.opponents_moves = []
+
+        self.my_possible_moves = self.board.get_legal_moves()
+        self.my_moves_this_level = []
+        # for my_moves in self.my_possible_moves:
+
+        print("player_is_me: {} depth: {} counter: {}".format(self.player_is_me, self.depth, self.counter))
+        print_possible_moves(self.board, self.board.active_player, self.board.inactive_player)
+
+        #explore all of my current level moves
+        for possible_move in self.my_possible_moves:
+            number_of_nodes = number_of_nodes + 1
+            current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player)
+            self.my_moves_this_level.append(current_move)
+
+
+    def print_results(self):
+        print("")
+        print("------RESULTS-------")
+        for my_move_at_this_level in self.my_moves_this_level:
+            print("move: {} get_my_score_post_move:{}".format(my_move_at_this_level.get_my_move(), my_move_at_this_level.get_my_score_post_move()))
+
+    def display(self):
+        print("player_is_me: {} depth {} counter {}".format(self.player_is_me, self.depth, self.counter))
+        print("my possible moves {}".format(self.my_possible_moves))
+
+
+def new_test():
+    global number_of_nodes
+    number_of_nodes = 0
+    import time
+    start_time = time.time()
+    from isolation import Board
+    player1 = RandomPlayer()
+    player2 = RandomPlayer()
+    board = Board(player1, player2)
+    available_moves = board.get_legal_moves(player1)
+    board.apply_move(available_moves[0])
+    available_moves = board.get_legal_moves(player2)
+    board.apply_move(available_moves[0])
+    print("Starting board")
+    print(board.to_string())
+
+    move = GetMove(board, True, 1)
+    # print("move={}".format(move.get_move()))
+    # move.display()
+    time_taken = time.time() - start_time
+    print("time taken {}".format(time_taken))
+    print("number of nodes {}".format(number_of_nodes))
 
 
 if __name__ == "__main__":
     # their_test()
     # human_vs_random()
-    test()
+    # test()
+    # test_nodes()
+    new_test()
