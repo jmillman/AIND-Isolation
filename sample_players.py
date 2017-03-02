@@ -454,6 +454,13 @@ class GetMove(object):
             current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player)
             self.my_moves_this_level.append(current_move)
 
+        print(type(self.my_moves_this_level[0].get_my_score_post_move()))
+        best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
+        worst_move = min(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
+        print("best_move: {} best_score: {} worst_move: {} worst_score: {}".format(best_move.get_my_move(), best_move.get_my_score_post_move(), worst_move.get_my_move(), worst_move.get_my_score_post_move()))
+
+        for move in self.my_moves_this_level:
+            print("move: {} score: {}".format(move.get_my_move(), move.get_my_score_post_move()))
 
     def print_results(self):
         print("")
@@ -475,12 +482,13 @@ def new_test():
     player1 = RandomPlayer()
     player2 = RandomPlayer()
     board = Board(player1, player2)
-    available_moves = board.get_legal_moves(player1)
-    board.apply_move(available_moves[0])
-    available_moves = board.get_legal_moves(player2)
-    board.apply_move(available_moves[0])
-    print("Starting board")
-    print(board.to_string())
+
+    # available_moves = board.get_legal_moves(player1)
+    # board.apply_move(available_moves[0])
+    # available_moves = board.get_legal_moves(player2)
+    # board.apply_move(available_moves[0])
+    # print("Starting board")
+    # print(board.to_string())
 
     move = GetMove(board, True, 1)
     # print("move={}".format(move.get_move()))
