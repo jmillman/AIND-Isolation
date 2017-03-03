@@ -225,111 +225,6 @@ class HumanPlayer():
         return legal_moves[index]
 
 
-def their_test():
-    from isolation import Board
-
-    # create an isolation board (by default 7x7)
-    player1 = RandomPlayer()
-    player2 = GreedyPlayer()
-    game = Board(player1, player2)
-
-    # place player 1 on the board at row 2, column 3, then place player 2 on
-    # the board at row 0, column 5; display the resulting board state.  Note
-    # that .apply_move() changes the calling object
-    game.apply_move((2, 3))
-    game.apply_move((0, 5))
-    print(game.to_string())
-
-    # players take turns moving on the board, so player1 should be next to move
-    assert(player1 == game.active_player)
-
-    # get a list of the legal moves available to the active player
-    print(game.get_legal_moves())
-
-    # get a successor of the current state by making a copy of the board and
-    # applying a move. Notice that this does NOT change the calling object
-    # (unlike .apply_move()).
-    new_game = game.forecast_move((1, 1))
-    assert(new_game.to_string() != game.to_string())
-    print("\nOld state:\n{}".format(game.to_string()))
-    print("\nNew state:\n{}".format(new_game.to_string()))
-
-    # play the remainder of the game automatically -- outcome can be "illegal
-    # move" or "timeout"; it should _always_ be "illegal move" in this example
-    winner, history, outcome = game.play()
-    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
-    print(game.to_string())
-    print("Move history:\n{!s}".format(history))
-
-def human_vs_random():
-    from isolation import Board
-
-    # create an isolation board (by default 7x7)
-    player1 = RandomPlayer()
-    player2 = HumanPlayer()
-    game = Board(player1, player2)
-
-    print(game.to_string())
-    winner, history, outcome = game.play(10000000)
-    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
-    print(game.to_string())
-    print("Move history:\n{!s}".format(history))
-
-def human_vs_random():
-    from isolation import Board
-
-    # create an isolation board (by default 7x7)
-    player1 = RandomPlayer()
-    player2 = HumanPlayer()
-    game = Board(player1, player2)
-
-    print(game.to_string())
-    winner, history, outcome = game.play(10000000)
-    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
-    print(game.to_string())
-    print("Move history:\n{!s}".format(history))
-
-
-
-def test():
-    from isolation import Board
-
-    # create an isolation board (by default 7x7)
-    player1 = RandomPlayer()
-    player2 = RandomPlayer()
-    board = Board(player1, player2)
-
-
-    board.apply_move((0, 0))
-    legal_moves_player2 = board.get_legal_moves()
-    board.apply_move(legal_moves_player2[0])
-    legal_moves_player1 = board.get_legal_moves()
-    return
-
-
-    print(board.to_string())
-
-    legal_moves_player1 = board.get_legal_moves()
-    # print("# of Moves Player 1: {}\nLegal Moves Player 1: {}\n".format(len(legal_moves_player1), legal_moves_player1))
-    print("Moves before start {}".format(len(legal_moves_player1)))
-    print("Moves {}".format(legal_moves_player1))
-    test_moves(board, legal_moves_player1, 2, player1)
-
-    return
-    iterations = 0
-    for tmp_move_level1_player1 in legal_moves_player1:
-        tmp_game_after_player1_first_move = game.forecast_move(tmp_move_level1_player1)
-        tmp_moves_player2 = tmp_game_after_player1_first_move.get_legal_moves()
-        print("Player 2 {} : {}".format(tmp_move_level1_player1, len(tmp_moves_player2)))
-        for tmp_move_level1_player2 in tmp_moves_player2:
-            iterations +=1
-            tmp_game_after_player2_first_move = tmp_game_after_player1_first_move.forecast_move(tmp_move_level1_player2)
-            tmp_moves_player1_after_player2_first_move = tmp_game_after_player2_first_move.get_legal_moves()
-            print(">>>>>Player 2 {} : {}".format(tmp_move_level1_player2, len(tmp_moves_player1_after_player2_first_move)))
-
-    print("iterations {}".format(iterations))
-
-
 class MyMove(object):
     def __init__(self, board, player_is_me, current_move, depth, counter=0):
         global number_of_nodes
@@ -364,44 +259,6 @@ class MyMove(object):
         for move in self.opponents_moves:
             move.display()
 
-
-def test_nodes():
-    import time
-
-    start_time = time.time()
-
-    global number_of_nodes
-    number_of_nodes = 0
-    from isolation import Board
-    player1 = RandomPlayer()
-    player2 = RandomPlayer()
-    board = Board(player1, player2)
-    available_moves = board.get_legal_moves(player1)
-    board.apply_move(available_moves[0])
-    available_moves = board.get_legal_moves(player2)
-    board.apply_move(available_moves[0])
-    print("Starting board")
-    print(board.to_string())
-
-    available_moves = board.get_legal_moves(player1)
-    print("My available_moves {}".format(len(available_moves)))
-    print("{}".format(available_moves))
-    my_moves = []
-    # for potential_move in available_moves:
-    #     my_moves.append(MyMove(board, True, potential_move, 0))
-
-    my_moves.append(MyMove(board, True, available_moves[0], 0))
-
-    end_time = time.time()
-    time_taken = end_time - start_time
-
-
-    print("time taken {}".format(time_taken))
-    print("number of nodes {}".format(number_of_nodes))
-
-    print("--------------------------------------------")
-    for move in my_moves:
-        move.display()
 
 def print_possible_moves(board, player1, player2):
     player1_moves = board.get_legal_moves(player1)
@@ -561,8 +418,4 @@ def new_test():
 
 
 if __name__ == "__main__":
-    # their_test()
-    # human_vs_random()
-    # test()
-    # test_nodes()
     new_test()
