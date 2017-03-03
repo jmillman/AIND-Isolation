@@ -408,9 +408,30 @@ def print_possible_moves(board, player1, player2):
     player2_moves = board.get_legal_moves(player2)
     print("player1 {}: {} player2 {}: {}".format(len(player1_moves), player1_moves, len(player2_moves), player2_moves))
 
+class BottomRow(object):
+    def __init__(self):
+        self.bottom_depth = -1
+        self.bottom_nodes = []
+    def registerNode(self, node, depth):
+        if(depth > self.bottom_depth):
+            self.bottom_depth = depth
+            self.bottom_nodes = []
+            self.bottom_nodes.append(node)
+        else:
+            self.bottom_nodes.append(node)
+    def get_bottom_row(self):
+        return self.bottom_nodes
+    def reset(self):
+        self.bottom_depth = -1
+        self.bottom_nodes = []
+    def display(self):
+        print("bottom_depth: {}".format(self.bottom_depth))
+        for node in self.bottom_nodes:
+            print("node move: {}".format(node.get_my_move()))
 
 class SingleMove(object):
-    def __init__(self, board, current_move, active_player, inactive_player):
+    global bottom_row
+    def __init__(self, board, current_move, active_player, inactive_player, current_depth):
         self.board = board
         self.current_move = current_move
         self.active_player = active_player
@@ -418,10 +439,12 @@ class SingleMove(object):
         self.improved_score_pre_move = improved_score(self.board, self.active_player)
         self.board_post_move = self.board.forecast_move(current_move)
         self.improved_score_post_move = improved_score(self.board_post_move, self.active_player)
+        self.current_depth = current_depth
         print("current_move: {}".format(current_move))
         print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
         print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
         print('')
+        bottom_row.registerNode(self, current_depth)
 
     def get_new_board(self):
         return self.board_post_move
@@ -435,6 +458,7 @@ class SingleMove(object):
 class GetMove(object):
     def __init__(self, board, player_is_me, depth, counter=0):
         global number_of_nodes
+        global bottom_row
         self.board = board
         self.player_is_me = player_is_me
         self.depth = depth
@@ -451,7 +475,7 @@ class GetMove(object):
         #explore all of my current level moves
         for possible_move in self.my_possible_moves:
             number_of_nodes = number_of_nodes + 1
-            current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player)
+            current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player, counter)
             self.my_moves_this_level.append(current_move)
 
         print(type(self.my_moves_this_level[0].get_my_score_post_move()))
@@ -461,6 +485,8 @@ class GetMove(object):
 
         for move in self.my_moves_this_level:
             print("move: {} score: {}".format(move.get_my_move(), move.get_my_score_post_move()))
+
+        print("--------------------------------------")
 
     def print_results(self):
         print("")
@@ -474,6 +500,9 @@ class GetMove(object):
 
 
 def new_test():
+    global bottom_row
+    bottom_row = BottomRow()
+
     global number_of_nodes
     number_of_nodes = 0
     import time
@@ -496,6 +525,7 @@ def new_test():
     time_taken = time.time() - start_time
     print("time taken {}".format(time_taken))
     print("number of nodes {}".format(number_of_nodes))
+    bottom_row.display()
 
 
 if __name__ == "__main__":
