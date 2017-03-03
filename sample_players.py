@@ -431,7 +431,8 @@ class BottomRow(object):
 
 class SingleMove(object):
     global bottom_row
-    def __init__(self, board, current_move, active_player, inactive_player, current_depth):
+    def __init__(self, board, current_move, active_player, inactive_player, max_depth, current_depth):
+        global number_of_nodes
         self.board = board
         self.current_move = current_move
         self.active_player = active_player
@@ -439,11 +440,16 @@ class SingleMove(object):
         self.improved_score_pre_move = improved_score(self.board, self.active_player)
         self.board_post_move = self.board.forecast_move(current_move)
         self.improved_score_post_move = improved_score(self.board_post_move, self.active_player)
+        self.max_depth = max_depth
         self.current_depth = current_depth
-        print("current_move: {}".format(current_move))
-        print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
-        print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
-        print('')
+        self.opponents_moves = []
+
+        number_of_nodes = number_of_nodes + 1
+
+        # print("current_move: {}".format(current_move))
+        # print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
+        # print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
+        # print('')
         bottom_row.registerNode(self, current_depth)
 
     def get_new_board(self):
@@ -453,11 +459,16 @@ class SingleMove(object):
         return self.improved_score_post_move
     def get_my_move(self):
         return self.current_move
+    def get_opponents_moves(self):
+        opponents_moves = self.board_post_move.get_legal_moves(self.inactive_player)
+        for possible_move in opponents_moves:
+            current_move = SingleMove(self.board_post_move, possible_move, self.board.inactive_player, self.board.active_player, self.max_depth, self.current_depth + 1)
+            self.opponents_moves.append(current_move)
+
 
 
 class GetMove(object):
     def __init__(self, board, player_is_me, depth, counter=0):
-        global number_of_nodes
         global bottom_row
         self.board = board
         self.player_is_me = player_is_me
@@ -469,24 +480,22 @@ class GetMove(object):
         self.my_moves_this_level = []
         # for my_moves in self.my_possible_moves:
 
-        print("player_is_me: {} depth: {} counter: {}".format(self.player_is_me, self.depth, self.counter))
+        # print("player_is_me: {} depth: {} counter: {}".format(self.player_is_me, self.depth, self.counter))
         print_possible_moves(self.board, self.board.active_player, self.board.inactive_player)
 
         #explore all of my current level moves
         for possible_move in self.my_possible_moves:
-            number_of_nodes = number_of_nodes + 1
-            current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player, counter)
+            current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player, depth, counter)
             self.my_moves_this_level.append(current_move)
 
-        print(type(self.my_moves_this_level[0].get_my_score_post_move()))
         best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
         worst_move = min(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
-        print("best_move: {} best_score: {} worst_move: {} worst_score: {}".format(best_move.get_my_move(), best_move.get_my_score_post_move(), worst_move.get_my_move(), worst_move.get_my_score_post_move()))
+        # print("best_move: {} best_score: {} worst_move: {} worst_score: {}".format(best_move.get_my_move(), best_move.get_my_score_post_move(), worst_move.get_my_move(), worst_move.get_my_score_post_move()))
 
-        for move in self.my_moves_this_level:
-            print("move: {} score: {}".format(move.get_my_move(), move.get_my_score_post_move()))
-
-        print("--------------------------------------")
+        # for move in self.my_moves_this_level:
+        #     print("move: {} score: {}".format(move.get_my_move(), move.get_my_score_post_move()))
+        #
+        # print("--------------------------------------")
 
     def print_results(self):
         print("")
@@ -512,20 +521,43 @@ def new_test():
     player2 = RandomPlayer()
     board = Board(player1, player2)
 
-    # available_moves = board.get_legal_moves(player1)
-    # board.apply_move(available_moves[0])
-    # available_moves = board.get_legal_moves(player2)
-    # board.apply_move(available_moves[0])
+    available_moves = board.get_legal_moves(player1)
+    board.apply_move(available_moves[0])
+    available_moves = board.get_legal_moves(player2)
+    board.apply_move(available_moves[0])
+    available_moves = board.get_legal_moves(player1)
+    board.apply_move(available_moves[0])
+    available_moves = board.get_legal_moves(player2)
+    board.apply_move(available_moves[0])
     # print("Starting board")
     # print(board.to_string())
 
     move = GetMove(board, True, 1)
     # print("move={}".format(move.get_move()))
     # move.display()
+    # bottom_row.display()
+
+    for move in bottom_row.get_bottom_row():
+        move.get_opponents_moves()
+
+    for move in bottom_row.get_bottom_row():
+        move.get_opponents_moves()
+
+    for move in bottom_row.get_bottom_row():
+        move.get_opponents_moves()
+    for move in bottom_row.get_bottom_row():
+        move.get_opponents_moves()
+    for move in bottom_row.get_bottom_row():
+        move.get_opponents_moves()
+    for move in bottom_row.get_bottom_row():
+        move.get_opponents_moves()
+
     time_taken = time.time() - start_time
+
+    bottom_row.display()
     print("time taken {}".format(time_taken))
     print("number of nodes {}".format(number_of_nodes))
-    bottom_row.display()
+    print(bottom_row.get_bottom_row()[0].get_new_board().to_string())
 
 
 if __name__ == "__main__":
