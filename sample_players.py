@@ -282,16 +282,17 @@ class BottomRow(object):
         self.bottom_depth = -1
         self.bottom_nodes = []
     def display(self):
+        # for node in self.bottom_nodes:
+        #     print("node move: {}".format(node.get_my_move()))
         print("bottom_depth: {}".format(self.bottom_depth))
-        for node in self.bottom_nodes:
-            print("node move: {}".format(node.get_my_move()))
 
 class SingleMove(object):
     global bottom_row
-    def __init__(self, board, current_move, active_player, inactive_player, max_depth, current_depth):
+    def __init__(self, board, current_move, player_is_me, active_player, inactive_player, max_depth, current_depth):
         global number_of_nodes
         self.board = board
         self.current_move = current_move
+        self.player_is_me = player_is_me
         self.active_player = active_player
         self.inactive_player = inactive_player
         self.improved_score_pre_move = improved_score(self.board, self.active_player)
@@ -316,11 +317,12 @@ class SingleMove(object):
         return self.improved_score_post_move
     def get_my_move(self):
         return self.current_move
-    def get_opponents_moves(self):
+    def get_opponents_moves(self, still_have_time):
         opponents_moves = self.board_post_move.get_legal_moves(self.inactive_player)
         for possible_move in opponents_moves:
-            current_move = SingleMove(self.board_post_move, possible_move, self.board.inactive_player, self.board.active_player, self.max_depth, self.current_depth + 1)
-            self.opponents_moves.append(current_move)
+            if (still_have_time()):
+                current_move = SingleMove(self.board_post_move, possible_move, not self.player_is_me, self.board.inactive_player, self.board.active_player, self.max_depth, self.current_depth + 1)
+                self.opponents_moves.append(current_move)
 
 
 
@@ -337,22 +339,41 @@ class GetMove(object):
         self.my_moves_this_level = []
         # for my_moves in self.my_possible_moves:
 
+        #set the best move to this level just incase
+        self.best_move = self.my_possible_moves[0]
+
+        import time
+        self.start_time = time.time()
+
+
         # print("player_is_me: {} depth: {} counter: {}".format(self.player_is_me, self.depth, self.counter))
         print_possible_moves(self.board, self.board.active_player, self.board.inactive_player)
 
         #explore all of my current level moves
         for possible_move in self.my_possible_moves:
-            current_move = SingleMove(self.board, possible_move, self.board.active_player, self.board.inactive_player, depth, counter)
+            current_move = SingleMove(self.board, possible_move, self.player_is_me, self.board.active_player, self.board.inactive_player, depth, counter)
             self.my_moves_this_level.append(current_move)
 
-        best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
-        worst_move = min(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
+        self.best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
+        self.worst_move = min(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
         # print("best_move: {} best_score: {} worst_move: {} worst_score: {}".format(best_move.get_my_move(), best_move.get_my_score_post_move(), worst_move.get_my_move(), worst_move.get_my_score_post_move()))
 
         # for move in self.my_moves_this_level:
         #     print("move: {} score: {}".format(move.get_my_move(), move.get_my_score_post_move()))
         #
         # print("--------------------------------------")
+        while (counter < depth) and self.still_have_time():
+            print("here {}".format(time.time() - self.start_time))
+            counter = counter + 1
+            for move in bottom_row.get_bottom_row():
+                move.get_opponents_moves(self.still_have_time)
+
+    def get_best_move(self):
+        return self.best_move
+
+    def still_have_time(self):
+        import time
+        return (time.time() - self.start_time < 1.90)
 
     def print_results(self):
         print("")
@@ -389,32 +410,35 @@ def new_test():
     # print("Starting board")
     # print(board.to_string())
 
-    move = GetMove(board, True, 1)
+    move = GetMove(board, True, 20)
+    print("Best Move: {}".format(move.get_best_move().get_my_move()))
+
     # print("move={}".format(move.get_move()))
     # move.display()
     # bottom_row.display()
 
-    for move in bottom_row.get_bottom_row():
-        move.get_opponents_moves()
-
-    for move in bottom_row.get_bottom_row():
-        move.get_opponents_moves()
-
-    for move in bottom_row.get_bottom_row():
-        move.get_opponents_moves()
-    for move in bottom_row.get_bottom_row():
-        move.get_opponents_moves()
-    for move in bottom_row.get_bottom_row():
-        move.get_opponents_moves()
-    for move in bottom_row.get_bottom_row():
-        move.get_opponents_moves()
+    # for move in bottom_row.get_bottom_row():
+    #     move.get_opponents_moves()
+    #
+    # for move in bottom_row.get_bottom_row():
+    #     move.get_opponents_moves()
+    #
+    # for move in bottom_row.get_bottom_row():
+    #     move.get_opponents_moves()
+    # for move in bottom_row.get_bottom_row():
+    #     move.get_opponents_moves()
+    # for move in bottom_row.get_bottom_row():
+    #     move.get_opponents_moves()
+    # for move in bottom_row.get_bottom_row():
+    #     move.get_opponents_moves()
 
     time_taken = time.time() - start_time
 
     bottom_row.display()
     print("time taken {}".format(time_taken))
     print("number of nodes {}".format(number_of_nodes))
-    print(bottom_row.get_bottom_row()[0].get_new_board().to_string())
+    # print(bottom_row.get_bottom_row()[0].get_new_board().to_string())
+    # print(bottom_row.get_bottom_row()[1].get_new_board().to_string())
 
 
 if __name__ == "__main__":
