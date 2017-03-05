@@ -304,10 +304,10 @@ class SingleMove(object):
 
         number_of_nodes = number_of_nodes + 1
 
-        # print("current_move: {}".format(current_move))
-        # print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
-        # print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
-        # print('')
+        print("current_move: {}".format(current_move))
+        print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
+        print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
+        print('')
         bottom_row.registerNode(self, current_depth)
 
     def get_new_board(self):
@@ -373,7 +373,9 @@ class GetMove(object):
 
     def still_have_time(self):
         import time
-        return (time.time() - self.start_time < 1.90)
+        time_limit = 1.90
+        # time_limit = 5.90
+        return (time.time() - self.start_time < time_limit)
 
     def print_results(self):
         print("")
@@ -386,7 +388,7 @@ class GetMove(object):
         print("my possible moves {}".format(self.my_possible_moves))
 
 
-def new_test():
+def test_my_stuff():
     global bottom_row
     bottom_row = BottomRow()
 
@@ -403,12 +405,12 @@ def new_test():
     board.apply_move(available_moves[0])
     available_moves = board.get_legal_moves(player2)
     board.apply_move(available_moves[0])
-    available_moves = board.get_legal_moves(player1)
-    board.apply_move(available_moves[0])
-    available_moves = board.get_legal_moves(player2)
-    board.apply_move(available_moves[0])
-    # print("Starting board")
-    # print(board.to_string())
+    # available_moves = board.get_legal_moves(player1)
+    # board.apply_move(available_moves[0])
+    # available_moves = board.get_legal_moves(player2)
+    # board.apply_move(available_moves[0])
+    print("Starting board")
+    print(board.to_string())
 
     move = GetMove(board, True, 20)
     print("Best Move: {}".format(move.get_best_move().get_my_move()))
@@ -437,9 +439,19 @@ def new_test():
     bottom_row.display()
     print("time taken {}".format(time_taken))
     print("number of nodes {}".format(number_of_nodes))
-    # print(bottom_row.get_bottom_row()[0].get_new_board().to_string())
-    # print(bottom_row.get_bottom_row()[1].get_new_board().to_string())
+    # bottom_row.get_bottom_row()[0].display()
+    print(bottom_row.get_bottom_row()[0].get_new_board().to_string())
+    print(bottom_row.get_bottom_row()[1].get_new_board().to_string())
 
+def test_their_classes():
+    from isolation import Board
+    from game_agent import CustomPlayer
+    player1 = CustomPlayer()
+    player2 = RandomPlayer()
+    board = Board(player1, player2)
+    move = player1.get_move(board, board.get_legal_moves(), 2)
+    print(move)
 
 if __name__ == "__main__":
-    new_test()
+    test_my_stuff()
+    # test_their_classes()
