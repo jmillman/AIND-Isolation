@@ -249,6 +249,11 @@ class CustomPlayer:
         # else:
         #     self.minimax(tmp_game, self.depth - 1, not self.maximizing_player)
 
+        # if maximizing_player:
+        #     max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(self.minimax(self.game, depth -1, not self.maximizing_player)), self.game.active_player))
+        # else:
+        #     max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(self.minimax(self.game, depth -1, not self.maximizing_player)), self.game.inactive_player))
+
         if maximizing_player:
             max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.active_player))
         else:
