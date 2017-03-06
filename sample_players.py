@@ -449,9 +449,9 @@ def test_their_classes():
     player1 = CustomPlayer()
     player2 = RandomPlayer()
     board = Board(player1, player2)
-    move = player1.get_move(board, board.get_legal_moves(), 2)
+    move = player1.get_move(board, board.get_legal_moves(), lambda: 99)
     print(move)
 
 if __name__ == "__main__":
-    test_my_stuff()
-    # test_their_classes()
+    # test_my_stuff()
+    test_their_classes()

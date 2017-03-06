@@ -36,69 +36,16 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
+    if game.is_loser(player):
+        return float("-inf")
 
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_winner(player):
+        return float("inf")
 
-class SingleMove(object):
-    global bottom_row
-    def __init__(self, board, current_move, max_depth = 0, current_depth = 0):
-        from sample_players import improved_score
-        global number_of_nodes
-        self.board = board
-        self.current_move = current_move
-        self.active_player = self.board.active_player
-        self.inactive_player = self.board.inactive_player
-        self.improved_score_pre_move = improved_score(self.board, self.active_player)
-        self.board_post_move = self.board.forecast_move(current_move)
-        self.improved_score_post_move = improved_score(self.board_post_move, self.active_player)
-        self.max_depth = max_depth
-        self.current_depth = current_depth
-        self.opponents_moves = []
-
-        number_of_nodes = number_of_nodes + 1
-
-        print("current_move: {}".format(current_move))
-        print("improved_score_pre_move: {} improved_score_post_move: {}".format(self.improved_score_pre_move, self.improved_score_post_move))
-        # print_possible_moves(self.board_post_move, self.active_player, self.inactive_player)
-        print('')
-        bottom_row.registerNode(self, current_depth)
-
-    def get_new_board(self):
-        return self.board_post_move
-
-    def get_my_score_post_move(self):
-        return self.improved_score_post_move
-    def get_my_move(self):
-        return self.current_move
-    def get_opponents_moves(self, still_have_time):
-        opponents_moves = self.board_post_move.get_legal_moves(self.inactive_player)
-        for possible_move in opponents_moves:
-            if (still_have_time()):
-                current_move = SingleMove(self.board_post_move, possible_move, self.max_depth, self.current_depth + 1)
-                self.opponents_moves.append(current_move)
-
-class BottomRow(object):
-    def __init__(self):
-        self.bottom_depth = -1
-        self.bottom_nodes = []
-    def registerNode(self, node, depth):
-        if(depth > self.bottom_depth):
-            self.bottom_depth = depth
-            self.bottom_nodes = []
-            self.bottom_nodes.append(node)
-        else:
-            self.bottom_nodes.append(node)
-    def get_bottom_row(self):
-        return self.bottom_nodes
-    def reset(self):
-        self.bottom_depth = -1
-        self.bottom_nodes = []
-    def display(self):
-        # for node in self.bottom_nodes:
-        #     print("node move: {}".format(node.get_my_move()))
-        print("bottom_depth: {}".format(self.bottom_depth))
-
+    # print(game.to_string())
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves)
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
@@ -138,11 +85,6 @@ class CustomPlayer:
         self.method = method
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
-
-        global bottom_row
-        bottom_row = BottomRow()
-        global number_of_nodes
-        number_of_nodes = 0
 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a
@@ -200,13 +142,8 @@ class CustomPlayer:
             self.legal_moves = legal_moves
             #set the best move to the first legal move incase there is an issue with time
             self.best_move = legal_moves[0]
-            self.my_moves_this_level = []
 
-            for possible_move in self.legal_moves:
-                current_move = SingleMove(self.game, possible_move)
-                self.my_moves_this_level.append(current_move)
-
-            self.best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move()).get_my_move()
+            self.best_move = self.minimax(self.game, 2, True)
 
             # depth = 2
             # counter = 0
@@ -216,15 +153,10 @@ class CustomPlayer:
             #         move.get_opponents_moves(self.still_have_time)
 
             return self.best_move
-            pass
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
             return self.best_move
-            pass
-
-        # Return the best move from the last completed search iteration
-        raise NotImplementedError
 
     def still_have_time(self):
         # import time
@@ -234,6 +166,8 @@ class CustomPlayer:
         return True
 
     def minimax(self, game, depth, maximizing_player=True):
+
+        print("minimax depth={} maximizing_player={}".format(depth, maximizing_player))
         """Implement the minimax search algorithm as described in the lectures.
 
         Parameters
@@ -264,11 +198,57 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
+
+
+        self.game = game
+        self.depth = depth
+        self.maximizing_player = maximizing_player
+
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        # for current_move in self.game.get_legal_moves():
+        #
+        #
+        # self.board_post_move = self.game.forecast_move(current_move)
+        #
+        # self.best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
+        # self.worst_move = min(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move())
+
+        # temp_best_move = ''
+        # for current_move in self.game.get_legal_moves():
+        #     print("current_move={}".format(current_move))
+        #     my_score = self.score(self.game.forecast_move(current_move), self.game.active_player if maximizing_player else self.game.inactive_player)
+        #     print("minimax={}".format(my_score))
+
+        while self.depth > 1:
+            self.depth = self.depth - 1
+            print (self.depth)
+            return self.minimax(self.game, self.depth, not self.maximizing_player)
+
+        if maximizing_player:
+            max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.active_player))
+        else:
+            max_move = min(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.inactive_player))
+        print("max_move={}", max_move)
+        return max_move
+
+            # self.my_moves_this_level = []
+        #
+        # for possible_move in self.legal_moves:
+        #     current_move = SingleMove(self.game, possible_move)
+        #     self.my_moves_this_level.append(current_move)
+        #
+        # counter = 0
+        # while (counter < depth):
+        #     counter = counter + 1
+        #     for move in bottom_row.get_bottom_row():
+        #         move.get_opponents_moves(self.still_have_time)
+        #
+        #
+        #
+        # self.best_move = max(self.my_moves_this_level, key=lambda move: move.get_my_score_post_move()).get_my_move()
+
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
