@@ -221,15 +221,58 @@ class CustomPlayer:
         #     my_score = self.score(self.game.forecast_move(current_move), self.game.active_player if maximizing_player else self.game.inactive_player)
         #     print("minimax={}".format(my_score))
 
-        while self.depth > 1:
-            self.depth = self.depth - 1
-            print (self.depth)
-            return self.minimax(self.game, self.depth, not self.maximizing_player)
+        # print ("minimax depth={} self.maximizing_player={}".format(self.depth, self.maximizing_player))
+        # print(self.game.to_string())
+        #
+        # self.max_score =  float("-inf") if maximizing_player else float("inf")
+        # for sample_move in self.game.get_legal_moves():
+        #     tmp_game = self.game.forecast_move(sample_move)
+        #     tmp_score = self.score(tmp_game, self.game.active_player)
+        #     if maximizing_player:
+        #         if(self.max_score < tmp_score):
+        #             self.max_score = tmp_score
+        #     else:
+        #         if(self.max_score > tmp_score):
+        #             self.max_score = tmp_score
+        #
+        #     print("self.max_score={}".format(self.max_score))
+        #
+        #     while self.depth > 1:
+        #         return_value = self.minimax(tmp_game, self.depth - 1, not self.maximizing_player)
+        #         print("return_value={}".format(return_value))
+
+        # if(self.depth == 1):
+        #     if maximizing_player:
+        #         max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.active_player))
+        #     else:
+        #         max_move = min(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.inactive_player))
+        # else:
+        #     self.minimax(tmp_game, self.depth - 1, not self.maximizing_player)
 
         if maximizing_player:
             max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.active_player))
         else:
             max_move = min(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.inactive_player))
+
+        # if maximizing_player:
+        #     max_move = max(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.active_player))
+        # else:
+        #     max_move = min(self.game.get_legal_moves(), key=lambda current_move: self.score(self.game.forecast_move(current_move), self.game.inactive_player))
+            # print("here")
+            # print(self.game.to_string())
+            # legal_moves = self.game.get_legal_moves()
+            # score_pre = self.score(self.game, self.game.inactive_player)
+            # tmp_game = self.game.forecast_move(legal_moves[0])
+            # score_post = self.score(tmp_game, self.game.inactive_player)
+            # print("score_pre={} score_post={}".format(score_pre, score_post))
+
+
+        # return
+        # while self.depth > 1:
+        #     self.depth = self.depth - 1
+        #     print (self.depth)
+        #     return self.minimax(self.game, self.depth, not self.maximizing_player)
+
         print("max_move={}", max_move)
         return max_move
 
