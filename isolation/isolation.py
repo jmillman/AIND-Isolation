@@ -332,9 +332,8 @@ class Board(object):
             curr_move = self.active_player.get_move(game_copy, legal_player_moves, time_left)
             move_end = time_left()
 
-            print(self.to_string())
-            print("move end")
-            # print move_end
+            # print(self.to_string())
+            # print("move end")
 
             if curr_move is None:
                 curr_move = Board.NOT_MOVED

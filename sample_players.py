@@ -447,10 +447,13 @@ def test_their_classes():
     from isolation import Board
     from game_agent import CustomPlayer
     player1 = CustomPlayer()
-    player2 = RandomPlayer()
-    board = Board(player1, player2)
-    move = player1.get_move(board, board.get_legal_moves(), lambda: 99)
-    print(move)
+    player2 = GreedyPlayer()
+    game = Board(player1, player2)
+
+    winner, history, outcome = game.play()
+    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
+    print(game.to_string())
+    print("Move history:\n{!s}".format(history))
 
 if __name__ == "__main__":
     # test_my_stuff()
