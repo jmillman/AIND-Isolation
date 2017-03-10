@@ -68,6 +68,8 @@ class CustomPlayer:
             if not legal_moves:
                 return (-1, -1)
 
+            # print("**********************", self.move_count)
+
             best_move = legal_moves[0]
             if(self.method == 'minimax'):
                 _, best_move = self.minimax(game, 5, True)
@@ -172,9 +174,9 @@ class CustomPlayer:
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     # if there is no best_move, save the first move
                     alpha = max(tmp_score, alpha)
-                    if(beta <= alpha):
+                    if(beta < alpha):
                         best_score = tmp_score
-                        print("ALPHA LEVEL {}".format(depth))
+                        # print("ALPHA LEVEL {}".format(depth))
                         break
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
@@ -187,9 +189,9 @@ class CustomPlayer:
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     # if there is no best_move, save the first move
                     beta = min(tmp_score, beta)
-                    if(beta <= alpha):
+                    if(beta < alpha):
                         best_score = tmp_score
-                        print("BETA LEVEL {}".format(depth))
+                        # print("BETA LEVEL {}".format(depth))
                         break
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
@@ -208,9 +210,9 @@ class CustomPlayer:
                     tmp_score = self.score(game.forecast_move(move), game.active_player)
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     alpha = max(tmp_score, alpha)
-                    if(beta <= alpha):
+                    if(beta < alpha):
                         best_score = tmp_score
-                        print("ALPHA LEVEL {}".format(depth))
+                        # print("ALPHA LEVEL {}".format(depth))
                         break
                     if (best_move == None or tmp_score > best_score):
                         # print("depth 0 Max best")
@@ -225,7 +227,7 @@ class CustomPlayer:
                     tmp_score = self.score(game.forecast_move(move), game.inactive_player)
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     beta = min(tmp_score, beta)
-                    if(beta <= alpha):
+                    if(beta < alpha):
                         best_score = tmp_score
                         # print("BETA LEVEL {}".format(depth))
                         break
