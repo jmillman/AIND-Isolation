@@ -449,39 +449,36 @@ def test_minimax():
     player1 = CustomPlayer(method='minimax')
     player2 = GreedyPlayer()
 
-    game = Board(player2, player1)
-    game.apply_move((0,0))
-    game.apply_move((0,1))
+    game = Board(player1, player2)
+    # game.apply_move((0,0))
+    # game.apply_move((0,1))
+    # print(game.to_string())
+
+    # my_move = player1.get_move(game, game.get_legal_moves(), 200)
+    # print(my_move)
+    # game.apply_move(my_move)
 
     winner, history, outcome = game.play(10000000000)
     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
     print(game.to_string())
     print("Move history:\n{!s}".format(history))
 
-# def test_alphabeta():
-#     from isolation import Board
-#     from game_agent import CustomPlayer
-#     player1 = CustomPlayer(method='alphabeta')
-#     player2 = GreedyPlayer()
-#
-#     game = Board(player2, player1)
-#     game.apply_move((0,0))
-#     game.apply_move((0,1))
-#
-#     winner, history, outcome = game.play(10000000000)
-#     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
-#     print(game.to_string())
-#     print("Move history:\n{!s}".format(history))
-
+    print("-----------------")
 def test_alphabeta3():
     from isolation import Board
     from game_agent import CustomPlayer
     player1 = CustomPlayer(method='alphabeta3')
     player2 = GreedyPlayer()
 
-    game = Board(player2, player1)
-    game.apply_move((0,0))
-    game.apply_move((0,1))
+    game = Board(player1, player2)
+    # game.apply_move((0,0))
+    # game.apply_move((0,1))
+    # print(game.to_string())
+    #
+    # my_move = player1.get_move(game, game.get_legal_moves(), 200)
+    # print(my_move)
+    # game.apply_move(my_move)
+
 
     winner, history, outcome = game.play(10000000000)
     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))

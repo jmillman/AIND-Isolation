@@ -70,9 +70,9 @@ class CustomPlayer:
 
             best_move = legal_moves[0]
             if(self.method == 'minimax'):
-                _, best_move = self.minimax(game, 2, True)
+                _, best_move = self.minimax(game, 1, True)
             elif(self.method == 'alphabeta3'):
-                _, best_move = self.alphabeta3(game, 2, float("-inf"), float("inf"), True)
+                _, best_move = self.alphabeta3(game, 1, float("-inf"), float("inf"), True)
             else:
                 raise
 
@@ -100,8 +100,10 @@ class CustomPlayer:
                 best_score = float("-inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     # print("max move={}".format(move))
                     tmp_score, _ = self.minimax(game.forecast_move(move), depth - 1, not maximizing_player)
+                    # print("depth {} Max move={} tmp_score={}".format(depth, move, tmp_score))
                     # if there is no best_move, save the first move
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
@@ -110,8 +112,10 @@ class CustomPlayer:
                 best_score = float("inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     # print("Min move={}".format(move))
                     tmp_score, _ = self.minimax(game.forecast_move(move), depth - 1, not maximizing_player)
+                    # print("depth {} Min move={} tmp_score={}".format(depth, move, tmp_score))
                     # if there is no best_move, save the first move
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
@@ -127,8 +131,9 @@ class CustomPlayer:
                 best_score = float("-inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     tmp_score = self.score(game.forecast_move(move), game.active_player)
-                    # print("depth 0 Max move={} tmp_score={}".format(move, tmp_score))
+                    # print("depth {} Max move={} tmp_score={}".format(depth, move, tmp_score))
                     if (best_move == None or tmp_score > best_score):
                         # print("depth 0 Max best")
                         best_score = tmp_score
@@ -138,9 +143,10 @@ class CustomPlayer:
                 best_score = float("-inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     #find my score after the opponent moves
                     tmp_score = self.score(game.forecast_move(move), game.inactive_player)
-                    # print("depth 0 Min move={} tmp_score={}".format(move, tmp_score))
+                    # print("depth {} Max move={} tmp_score={}".format(depth, move, tmp_score))
                     #keep the lowest score, because that is what the opponent will do
                     if (best_move == None or tmp_score > best_score):
                         # print("depth 0 Min best")
@@ -153,8 +159,8 @@ class CustomPlayer:
     def alphabeta3(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         best_move = (-1, -1)
 
-        if self.time_left() < self.TIMER_THRESHOLD:
-            raise Timeout()
+        # if self.time_left() < self.TIMER_THRESHOLD:
+        #     raise Timeout()
 
         if(depth > 0):
             best_move = None
@@ -163,12 +169,14 @@ class CustomPlayer:
                 best_score = float("-inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
-                    # print("max move={}".format(move))
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     tmp_score, _ = self.alphabeta3(game.forecast_move(move), depth - 1, alpha, beta, not maximizing_player)
+                    # print("depth {} Max move={} tmp_score={}".format(depth, move, tmp_score))
                     # if there is no best_move, save the first move
                     alpha = max(tmp_score, alpha)
                     if(beta <= alpha):
-                        print("ALPHA LEVEL {}".format(depth))
+                        best_score = tmp_score
+                        # print("ALPHA LEVEL {}".format(depth))
                         break
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
@@ -177,12 +185,14 @@ class CustomPlayer:
                 best_score = float("inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
-                    # print("Min move={}".format(move))
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     tmp_score, _ = self.alphabeta3(game.forecast_move(move), depth - 1, alpha, beta, not maximizing_player)
+                    # print("depth {} Min move={} tmp_score={}".format(depth, move, tmp_score))
                     # if there is no best_move, save the first move
                     beta = min(tmp_score, beta)
                     if(beta <= alpha):
-                        print("BETA LEVEL {}".format(depth))
+                        best_score = tmp_score
+                        # print("BETA LEVEL {}".format(depth))
                         break
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
@@ -198,11 +208,13 @@ class CustomPlayer:
                 best_score = float("-inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     tmp_score = self.score(game.forecast_move(move), game.active_player)
-                    # print("depth 0 Max move={} tmp_score={}".format(move, tmp_score))
+                    # print("depth {} Max move={} tmp_score={}".format(depth, move, tmp_score))
                     alpha = max(tmp_score, alpha)
                     if(beta <= alpha):
-                        print("ALPHA LEVEL {}".format(depth))
+                        best_score = tmp_score
+                        # print("ALPHA LEVEL {}".format(depth))
                         break
                     if (best_move == None or tmp_score > best_score):
                         # print("depth 0 Max best")
@@ -213,13 +225,15 @@ class CustomPlayer:
                 best_score = float("-inf")
                 # for move in tmp_moves:
                 for move in game.get_legal_moves():
+                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
                     #find my score after the opponent moves
                     tmp_score = self.score(game.forecast_move(move), game.inactive_player)
+                    # print("depth {} Min move={} tmp_score={}".format(depth, move, tmp_score))
                     beta = min(tmp_score, beta)
                     if(beta <= alpha):
-                        print("BETA LEVEL {}".format(depth))
+                        best_score = tmp_score
+                        # print("BETA LEVEL {}".format(depth))
                         break
-                    # print("depth 0 Min move={} tmp_score={}".format(move, tmp_score))
                     #keep the lowest score, because that is what the opponent will do
                     if (best_move == None or tmp_score > best_score):
                         # print("depth 0 Min best")
