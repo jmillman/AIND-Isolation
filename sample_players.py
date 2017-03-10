@@ -443,18 +443,52 @@ def test_my_stuff():
     print(bottom_row.get_bottom_row()[0].get_new_board().to_string())
     print(bottom_row.get_bottom_row()[1].get_new_board().to_string())
 
-def test_their_classes():
+def test_minimax():
     from isolation import Board
     from game_agent import CustomPlayer
-    player1 = CustomPlayer()
+    player1 = CustomPlayer(method='minimax')
     player2 = GreedyPlayer()
-    game = Board(player1, player2)
 
-    winner, history, outcome = game.play()
+    game = Board(player2, player1)
+    game.apply_move((0,0))
+    game.apply_move((0,1))
+
+    winner, history, outcome = game.play(10000000000)
+    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
+    print(game.to_string())
+    print("Move history:\n{!s}".format(history))
+
+# def test_alphabeta():
+#     from isolation import Board
+#     from game_agent import CustomPlayer
+#     player1 = CustomPlayer(method='alphabeta')
+#     player2 = GreedyPlayer()
+#
+#     game = Board(player2, player1)
+#     game.apply_move((0,0))
+#     game.apply_move((0,1))
+#
+#     winner, history, outcome = game.play(10000000000)
+#     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
+#     print(game.to_string())
+#     print("Move history:\n{!s}".format(history))
+
+def test_alphabeta3():
+    from isolation import Board
+    from game_agent import CustomPlayer
+    player1 = CustomPlayer(method='alphabeta3')
+    player2 = GreedyPlayer()
+
+    game = Board(player2, player1)
+    game.apply_move((0,0))
+    game.apply_move((0,1))
+
+    winner, history, outcome = game.play(10000000000)
     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
     print(game.to_string())
     print("Move history:\n{!s}".format(history))
 
 if __name__ == "__main__":
     # test_my_stuff()
-    test_their_classes()
+    test_minimax()
+    test_alphabeta3()
