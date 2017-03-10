@@ -74,7 +74,7 @@ class CustomPlayer:
             if(self.method == 'minimax'):
                 _, best_move = self.minimax(game, 5, True)
             elif(self.method == 'alphabeta3'):
-                _, best_move = self.alphabeta3(game, 5, float("-inf"), float("inf"), True)
+                _, best_move = self.alphabeta3(game, 9, float("-inf"), float("inf"), True)
             else:
                 raise
 
