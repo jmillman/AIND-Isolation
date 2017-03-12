@@ -468,11 +468,11 @@ def test_alphabeta3():
     from isolation import Board
     from game_agent import CustomPlayer
 
-    # player1 = CustomPlayer(method='alphabeta3')
-    # player2 = GreedyPlayer()
+    player1 = CustomPlayer(method='alphabeta')
+    player2 = GreedyPlayer()
 
-    player1 = GreedyPlayer()
-    player2 = CustomPlayer(method='alphabeta3')
+    # player1 = GreedyPlayer()
+    # player2 = CustomPlayer(method='alphabeta3')
 
     game = Board(player1, player2)
     # game.apply_move((0,0))
@@ -491,5 +491,5 @@ def test_alphabeta3():
 
 if __name__ == "__main__":
     # test_my_stuff()
-    # test_minimax()
+    test_minimax()
     test_alphabeta3()
