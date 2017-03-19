@@ -143,13 +143,12 @@ class CustomPlayer:
 
             best_move = legal_moves[0]
             if(self.method == 'minimax'):
-                _, best_move = self.minimax(game, 4, True)
+                _, best_move = self.minimax(game, self.search_depth, True)
             elif(self.method == 'alphabeta'):
-                _, best_move = self.alphabeta(game, 4, float("-inf"), float("inf"), True)
+                _, best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True)
             else:
                 raise
 
-            self.move_count += 1
             # print("move# {}, move{}".format(self.move_count, best_move))
             return best_move
 
@@ -196,7 +195,7 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        if(depth > 0):
+        if(depth > 1):
             best_move = None
             # print("depth {}".format(depth))
             if maximizing_player:
@@ -227,7 +226,7 @@ class CustomPlayer:
             # print("end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
             return best_score, best_move
 
-        if(depth == 0):
+        if(depth == 1):
             best_move = None
             # print("depth 0")
             if maximizing_player:
@@ -300,7 +299,7 @@ class CustomPlayer:
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
-        if(depth > 0):
+        if(depth > 1):
             best_move = None
             # print("depth {}".format(depth))
             if maximizing_player:
@@ -337,7 +336,7 @@ class CustomPlayer:
             # print("end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
             return best_score, best_move
 
-        if(depth == 0):
+        if(depth == 1):
             best_move = None
             # print("depth 0")
             if maximizing_player:

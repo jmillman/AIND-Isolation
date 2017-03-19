@@ -446,7 +446,7 @@ def test_my_stuff():
 def test_minimax():
     from isolation import Board
     from game_agent import CustomPlayer
-    player1 = CustomPlayer(method='minimax')
+    player1 = CustomPlayer(method='minimax', search_depth=3)
     player2 = GreedyPlayer()
 
     game = Board(player1, player2)
@@ -468,7 +468,7 @@ def test_alphabeta3():
     from isolation import Board
     from game_agent import CustomPlayer
 
-    player1 = CustomPlayer(method='alphabeta')
+    player1 = CustomPlayer(method='alphabeta', search_depth=3)
     player2 = GreedyPlayer()
 
     # player1 = GreedyPlayer()
