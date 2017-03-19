@@ -310,7 +310,7 @@ class CustomPlayer:
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     # if there is no best_move, save the first move
                     alpha = max(tmp_score, alpha)
-                    if(beta < alpha):
+                    if(beta <= alpha):
                         best_score = tmp_score
                         # print("ALPHA LEVEL {}".format(depth))
                         break
@@ -325,7 +325,7 @@ class CustomPlayer:
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     # if there is no best_move, save the first move
                     beta = min(tmp_score, beta)
-                    if(beta < alpha):
+                    if(beta <= alpha):
                         best_score = tmp_score
                         # print("BETA LEVEL {}".format(depth))
                         break
@@ -346,7 +346,7 @@ class CustomPlayer:
                     tmp_score = self.score(game.forecast_move(move), game.active_player)
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     alpha = max(tmp_score, alpha)
-                    if(beta < alpha):
+                    if(beta <= alpha):
                         best_score = tmp_score
                         # print("ALPHA LEVEL {}".format(depth))
                         break
@@ -363,7 +363,7 @@ class CustomPlayer:
                     tmp_score = self.score(game.forecast_move(move), game.inactive_player)
                     # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     beta = min(tmp_score, beta)
-                    if(beta < alpha):
+                    if(beta <= alpha):
                         best_score = tmp_score
                         # print("BETA LEVEL {}".format(depth))
                         break
