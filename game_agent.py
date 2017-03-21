@@ -141,29 +141,35 @@ class CustomPlayer:
 
             # print("**********************", self.move_count)
 
-            self.best_move = legal_moves[0]
-
-            #if it is iterative, set the search depth to infinity, so it will just search until time runs out
-            if(self.iterative == True):
-                self.search_depth = float("inf")
-                print("self.best_move pre doing anything={}".format(self.best_move))
-
+            best_move = legal_moves[0]
             if(self.method == 'minimax'):
-                _, self.best_move = self.minimax(game, self.search_depth, True)
+                if(self.iterative):
+                    temp_depth = 1
+                    while True:
+                        _, best_move = self.minimax(game, temp_depth, True)
+                        temp_depth += 1
+                else:
+                    _, best_move = self.minimax(game, self.search_depth, True)
             elif(self.method == 'alphabeta'):
-                _, self.best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True)
+                if(self.iterative):
+                    temp_depth = 1
+                    while True:
+                        _, best_move = self.alphabeta(game, temp_depth, float("-inf"), float("inf"), True)
+                        temp_depth += 1
+                else:
+                    _, best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True)
             else:
                 raise
 
             # print("move# {}, move{}".format(self.move_count, best_move))
-            return self.best_move
+            return best_move
 
         except Timeout:
-            print("timeout self.best_move={}".format(self.best_move))
+            print("timeout")
             # print(game.to_string())
             # print(self.best_move)
             # Handle any actions required at timeout, if necessary
-            return self.best_move
+            return best_move
 
     def minimax(self, game, depth, maximizing_player=True):
         """Implement the minimax search algorithm as described in the lectures.
@@ -196,13 +202,13 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        best_move = None
-        best_score = float("-inf")
+        # best_move = (-1, -1)
 
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
         if(depth > 1):
+            best_move = None
             # print("depth {}".format(depth))
             if maximizing_player:
                 best_score = float("-inf")
@@ -216,9 +222,6 @@ class CustomPlayer:
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
                         best_move = move
-                    #if it is a top level depth, save the best move
-                    if(self.search_depth == depth):
-                        self.best_move = move
             else:
                 best_score = float("inf")
                 # for move in tmp_moves:
@@ -231,14 +234,12 @@ class CustomPlayer:
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
                         best_move = move
-                    #if it is a top level depth, save the best move
-                    if(self.search_depth == depth):
-                        self.best_move = move
 
             # print("end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
             return best_score, best_move
 
         if(depth == 1):
+            best_move = None
             # print("depth 0")
             if maximizing_player:
                 best_score = float("-inf")
@@ -250,10 +251,7 @@ class CustomPlayer:
                         # print("depth 0 Max best")
                         best_score = tmp_score
                         best_move = move
-                    # if it is a top level depth, save the best move
-                    if (self.search_depth == depth):
-                        self.best_move = move
-                    # print("end depth 0 if")
+                # print("end depth 0 if")
             else:
                 best_score = float("-inf")
                 # for move in tmp_moves:
@@ -266,9 +264,6 @@ class CustomPlayer:
                         # print("depth 0 Min best")
                         best_score = tmp_score
                         best_move = move
-                    #if it is a top level depth, save the best move
-                    if(self.search_depth == depth):
-                        self.best_move = move
 
         # print("end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
 
@@ -312,13 +307,12 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        best_move = None
-        best_score = float("-inf")
 
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
         if(depth > 1):
+            best_move = None
             # print("depth {}".format(depth))
             if maximizing_player:
                 best_score = float("-inf")
@@ -335,9 +329,6 @@ class CustomPlayer:
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
                         best_move = move
-                    # if it is a top level depth, save the best move
-                    if (self.search_depth == depth):
-                        self.best_move = move
             else:
                 best_score = float("inf")
                 # for move in tmp_moves:
@@ -353,14 +344,12 @@ class CustomPlayer:
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
                         best_move = move
-                    #if it is a top level depth, save the best move
-                    if(self.search_depth == depth):
-                        self.best_move = move
 
             # print("end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
             return best_score, best_move
 
         if(depth == 1):
+            best_move = None
             # print("depth 0")
             if maximizing_player:
                 best_score = float("-inf")
@@ -377,10 +366,7 @@ class CustomPlayer:
                         # print("depth 0 Max best")
                         best_score = tmp_score
                         best_move = move
-                    # if it is a top level depth, save the best move
-                    if (self.search_depth == depth):
-                        self.best_move = move
-                    # print("end depth 0 if")
+                # print("end depth 0 if")
             else:
                 best_score = float("-inf")
                 # for move in tmp_moves:
@@ -398,10 +384,7 @@ class CustomPlayer:
                         # print("depth 0 Min best")
                         best_score = tmp_score
                         best_move = move
-                    # if it is a top level depth, save the best move
-                    if (self.search_depth == depth):
-                        self.best_move = move
-                    # print("end depth 0 else opponent best_move={} best_score={}".format(best_move, best_score))
+                # print("end depth 0 else opponent best_move={} best_score={}".format(best_move, best_score))
 
         # print("end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
         return best_score, best_move
