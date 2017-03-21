@@ -478,7 +478,7 @@ class Project1Test(unittest.TestCase):
 
 
     @timeout(20)
-    @unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
+    # @unittest.skip("Skip iterative deepening test.")  # Uncomment this line to skip test
     def test_get_move(self):
         """ Test iterative deepening in CustomPlayer.get_move by placing an
         agent on the game board and performing ID minimax search, which
@@ -529,6 +529,10 @@ class Project1Test(unittest.TestCase):
 
             diff_total = abs(board.counts[0] - exact_counts[idx][0])
             diff_unique = abs(board.counts[1] - exact_counts[idx][1])
+
+            print("board.counts[0] = {} exact_counts[idx][0] = {}".format(board.counts[0], exact_counts[idx][0]))
+            print("board.counts[1] = {} exact_counts[idx][1] = {}".format(board.counts[1], exact_counts[idx][1]))
+            print("diff_total={} diff_unique={}".format(diff_total, diff_unique))
 
             self.assertTrue(diff_total <= 1 and diff_unique == 0, ID_FAIL)
 
