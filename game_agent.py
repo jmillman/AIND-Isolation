@@ -9,6 +9,35 @@ relative strength using tournament.py and include the results in your report.
 import random
 import math
 
+def custom_score_simple(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    diff = own_moves - opp_moves
+    return float(diff)
+
+def custom_score_my_open_moves(game, player):
+    #just rank moves according to what gives me the most options
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    return float(own_moves)
+
 def custom_score_diff_in_free_percent_of_board(game, player):
     #this will take the percentage the free spaces I can move to - the percentage of free spaces an opponent can move to
     #this should weight more heavily for me when the opponent  has a smaller number of moves
@@ -232,6 +261,8 @@ class CustomPlayer:
                         if(tmp_score > float("-inf")):
                             best_move = tmp_best_move
                             best_score = tmp_score
+                        else:
+                            break
                         # print("MM move returned = {}, score = {}".format(best_move, tmp_score))
                         temp_depth += 1
                 else:
@@ -245,7 +276,9 @@ class CustomPlayer:
                         if(tmp_score > float("-inf")):
                             best_move = tmp_best_move
                             best_score = tmp_score
-                        # print("AB move returned = {}, score = {}".format(best_move, tmp_score))
+                        else:
+                            break
+                    # print("AB move returned = {}, score = {}".format(best_move, tmp_score))
                         temp_depth += 1
                 else:
                     tmp_score, best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True, True)

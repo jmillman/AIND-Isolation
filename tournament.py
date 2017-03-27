@@ -210,13 +210,17 @@ def main():
     from game_agent import custom_score_diff_in_mine_and_double_opponent_chase_incase_of_tie
     from game_agent import custom_score_diff_in_mine_and_double_opponent_run_away_incase_of_tie
     from game_agent import custom_score_divide_own_by_opponent
+    from game_agent import custom_score_my_open_moves
+    from game_agent import custom_score_simple
     test_agents = [
-        Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
-        Agent(CustomPlayer(score_fn=custom_score_diff_in_free_percent_of_board, **CUSTOM_ARGS), "Student"),
+        # Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
+        Agent(CustomPlayer(score_fn=custom_score_my_open_moves, **CUSTOM_ARGS), "Student"),
+        Agent(CustomPlayer(score_fn=custom_score_simple, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent_chase_incase_of_tie, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent_run_away_incase_of_tie, **CUSTOM_ARGS), "Student"),
-        Agent(CustomPlayer(score_fn=custom_score_divide_own_by_opponent, **CUSTOM_ARGS), "Student")
+        Agent(CustomPlayer(score_fn=custom_score_divide_own_by_opponent, **CUSTOM_ARGS), "Student"),
+        Agent(CustomPlayer(score_fn=custom_score_diff_in_free_percent_of_board, **CUSTOM_ARGS), "Student")
     ]
 
     print(DESCRIPTION)
