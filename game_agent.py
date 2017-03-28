@@ -149,7 +149,7 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return custom_score_diff_in_mine_and_double_opponent_run_away_incase_of_tie(game, player)
+    return custom_score_diff_in_mine_and_double_opponent(game, player)
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
@@ -181,7 +181,7 @@ class CustomPlayer:
         timer expires.
     """
     def __init__(self, search_depth=3, score_fn=custom_score,
-                 iterative=True, method='minimax', timeout=15.):
+                 iterative=True, method='minimax', timeout=50.):
         self.search_depth = search_depth
         self.iterative = iterative
         self.score = score_fn
@@ -257,31 +257,31 @@ class CustomPlayer:
                     temp_depth = 1
                     while True:
                     # while temp_depth <= (len(legal_moves)):
-                        tmp_score, tmp_best_move = self.minimax(game, temp_depth, True, True)
+                        tmp_score, tmp_best_move = self.minimax(game, temp_depth, True)
                         if(tmp_score > float("-inf")):
                             best_move = tmp_best_move
                             best_score = tmp_score
-                        else:
-                            break
+                        # else:
+                        #     break
                         # print("MM move returned = {}, score = {}".format(best_move, tmp_score))
                         temp_depth += 1
                 else:
-                    tmp_score, best_move = self.minimax(game, self.search_depth, True, True)
+                    tmp_score, best_move = self.minimax(game, self.search_depth, True)
             elif(self.method == 'alphabeta'):
                 if(self.iterative):
                     temp_depth = 1
                     while True:
                     # while temp_depth <= (len(legal_moves)):
-                        tmp_score, tmp_best_move = self.alphabeta(game, temp_depth, float("-inf"), float("inf"), True, True)
+                        tmp_score, tmp_best_move = self.alphabeta(game, temp_depth, float("-inf"), float("inf"), True)
                         if(tmp_score > float("-inf")):
                             best_move = tmp_best_move
                             best_score = tmp_score
-                        else:
-                            break
+                        # else:
+                        #     break
                     # print("AB move returned = {}, score = {}".format(best_move, tmp_score))
                         temp_depth += 1
                 else:
-                    tmp_score, best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True, True)
+                    tmp_score, best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True)
             else:
                 raise
 
@@ -310,7 +310,7 @@ class CustomPlayer:
             # Handle any actions required at timeout, if necessary
             return best_move
 
-    def minimax(self, game, depth, maximizing_player=True, is_root_move = False):
+    def minimax(self, game, depth, maximizing_player=True):
         """Implement the minimax search algorithm as described in the lectures.
 
         Parameters
@@ -411,7 +411,7 @@ class CustomPlayer:
         # print("minimax end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
         return best_score, best_move
 
-    def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True, is_root_move = False):
+    def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
         lectures.
 
@@ -491,7 +491,7 @@ class CustomPlayer:
                     # if there is no best_move, save the first move
                     beta = min(tmp_score, beta)
                     if(beta <= alpha):
-                        # best_score = tmp_score
+                        best_score = tmp_score
                         break
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
@@ -507,7 +507,7 @@ class CustomPlayer:
 
                     alpha = max(tmp_score, alpha)
                     if(beta <= alpha):
-                        # best_score = tmp_score
+                        best_score = tmp_score
                         break
                     if (best_move == None or tmp_score > best_score):
                         best_score = tmp_score
