@@ -68,6 +68,20 @@ def custom_score_diff_in_mine_and_double_opponent(game, player):
     diff = own_moves - (2 * opp_moves)
     return float(diff)
 
+def custom_score_diff_in_opp_and_double_mine(game, player):
+    #this is to test a bad scoring algorithm
+    #simply take the difference in my opp - (2 * my moves), should weight 2 to 1 better than 5 to 4
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    diff = opp_moves - (2 * own_moves)
+    return float(diff)
+
 def custom_score_divide_own_by_opponent(game, player):
     #divide my moves by the opponent
     if game.is_loser(player):
@@ -122,6 +136,26 @@ def custom_score_diff_in_mine_and_double_opponent_run_away_incase_of_tie(game, p
     # still want to make the main driver the differenc in locations, and don't want the distance to factor too much into, so double the diff
     return float(diff * 2 + dist_between_locations)
 
+def custom_score_diff_in_mine_and_double_opponent_closest_to_center_tie(game, player):
+    # take the difference in my moves - (2 * opponentes moves)
+    # then double the number and subtract the distance away from the center, meaning it will rank higher for moves closest to the center
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    diff = own_moves - (2 * opp_moves)
+
+    own_location = game.get_player_location(player)
+    center_of_board = (game.height // 2, game.width // 2)
+    dist_between_locations = math.hypot(own_location[0] - center_of_board[0], own_location[1] - center_of_board[1])
+
+    # still want to make the main driver the differenc in locations, and don't want the distance to factor too much into, so double the diff
+    return float(diff * 2 - dist_between_locations)
+
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
     pass
@@ -149,7 +183,7 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return custom_score_diff_in_mine_and_double_opponent(game, player)
+    return custom_score_divide_own_by_opponent(game, player)
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
@@ -246,24 +280,19 @@ class CustomPlayer:
                 best_move = legal_moves[0]
                 best_score = float("-inf")
 
-            # print("")
             self.move_count += 1
             player_number = game.__player_symbols__[game.active_player]
-            print("GET MOVE START********************** I am {} legal_moves {}".format(player_number, legal_moves))
-            # print(game.to_string())
 
             if(self.method == 'minimax'):
                 if(self.iterative):
                     temp_depth = 1
                     while True:
-                    # while temp_depth <= (len(legal_moves)):
                         tmp_score, tmp_best_move = self.minimax(game, temp_depth, True)
                         if(tmp_score > float("-inf")):
                             best_move = tmp_best_move
                             best_score = tmp_score
                         else:
                             break
-                        # print("MM move returned = {}, score = {}".format(best_move, tmp_score))
                         temp_depth += 1
                 else:
                     tmp_score, best_move = self.minimax(game, self.search_depth, True)
@@ -271,53 +300,25 @@ class CustomPlayer:
                 if(self.iterative):
                     temp_depth = 1
                     while True:
-                    # while temp_depth <= (len(legal_moves)):
                         tmp_score, tmp_best_move = self.alphabeta(game, temp_depth, float("-inf"), float("inf"), True)
                         if(tmp_score > float("-inf")):
                             best_move = tmp_best_move
                             best_score = tmp_score
-                        # else:
-                        #     break
+                        else:
+                            break
                         if (best_move == None):
                             print(game.to_string())
                             tmp_score, tmp_best_move = self.alphabeta(game, temp_depth, float("-inf"), float("inf"), True)
-                            test = ""
 
-                                # print("AB move returned = {}, score = {}".format(best_move, tmp_score))
                         temp_depth += 1
                 else:
                     tmp_score, best_move = self.alphabeta(game, self.search_depth, float("-inf"), float("inf"), True)
             else:
                 raise
 
-            # try:
-            # print("************LEGIT No timer*****************")
-            # print("move = {} score = {}".format(best_move, best_score))
-            # print("legal_moves= {}".format(legal_moves))
-            # print("I am player {}".format(player_number))
-            # print(game.to_string())
-            # except:
-            #     print("GET MOVE END move used = {} score = {}".format(best_move, "No Score"))
-            if(best_move == None):
-                print("REGULAR NONE************** I am {}".format(player_number))
-                print(game.to_string())
             return best_move
 
         except Timeout:
-            # print("************TIMEOUT*****************")
-            # print("move = {} score = {}".format(best_move, best_score))
-            # print("legal_moves= {}".format(legal_moves))
-            # print("I am player {}".format(player_number))
-            # own_moves = len(game.get_legal_moves(game.active_player))
-            # opp_moves = len(game.get_legal_moves(game.get_opponent(game.active_player)))
-            # print("own_moves = {} opp_moves = {}".format(own_moves, opp_moves))
-            # print(game.to_string())
-            # print(game.to_string())
-
-            # print(game.to_string())
-            # Handle any actions required at timeout, if necessary
-            if(best_move == None):
-                print("TIMEOUT NONE*************** ")
             return best_move
 
     def minimax(self, game, depth, maximizing_player=True):
@@ -351,12 +352,6 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        # best_move = (-1, -1)
-
-        # if(is_root_move):
-        #     print("ROOT MOVE minimax********************")
-        print("minimax depth = {}".format(depth))
-
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
@@ -370,55 +365,38 @@ class CustomPlayer:
             # print("depth {}".format(depth))
             if maximizing_player:
                 best_score = float("-inf")
-                # for move in tmp_moves:
                 for move in legal_moves:
-                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
-                    # print("max move={}".format(move))
                     tmp_score, _ = self.minimax(game.forecast_move(move), depth - 1, not maximizing_player)
-                    # print("depth {} Max move={} tmp_score={}".format(depth, move, tmp_score))
                     # if there is no best_move, save the first move
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
                         best_move = move
             else:
                 best_score = float("inf")
-                # for move in tmp_moves:
                 for move in legal_moves:
-                    # print("depth {} {} move={}".format(depth, 'Max' if maximizing_player else 'min', move))
-                    # print("Min move={}".format(move))
                     tmp_score, _ = self.minimax(game.forecast_move(move), depth - 1, not maximizing_player)
-                    # print("depth {} Min move={} tmp_score={}".format(depth, move, tmp_score))
                     # if there is no best_move, save the first move
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
                         best_move = move
         if(depth == 1):
-            # print("depth 0")
             if maximizing_player:
                 best_score = float("-inf")
-                # for move in tmp_moves:
                 for move in legal_moves:
                     tmp_score = self.score(game.forecast_move(move), game.active_player)
-                    # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     if (best_move == None or tmp_score > best_score):
-                        # print("depth 0 Max best")
                         best_score = tmp_score
                         best_move = move
-                # print("end depth 0 if")
             else:
                 best_score = float("-inf")
-                # for move in tmp_moves:
                 for move in legal_moves:
                     #find my score after the opponent moves
                     tmp_score = self.score(game.forecast_move(move), game.inactive_player)
-                    # print("depth {} {} move={} tmp_score={}".format(depth, 'Max' if maximizing_player else 'min', move, tmp_score))
                     #keep the lowest score, because that is what the opponent will do
                     if (best_move == None or tmp_score < best_score):
-                        # print("depth 0 Min best")
                         best_score = tmp_score
                         best_move = move
 
-        # print("minimax end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'min', best_move, best_score))
         return best_score, best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
@@ -459,13 +437,6 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-
-        # if(is_root_move):
-        #     print("ROOT MOVE alphabeta******************** depth = {}".format(depth))
-        # print("alphabeta depth = {}".format(depth))
-
-        # if (len(game.get_blank_spaces()) // 2 <= 6):
-        #     print(game.to_string())
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
 
@@ -478,64 +449,52 @@ class CustomPlayer:
         if(depth > 1):
             if maximizing_player:
                 best_score = float("-inf")
-                # for move in tmp_moves:
                 for move in legal_moves:
                     tmp_score, _ = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, not maximizing_player)
-                    print("alpha beta attempted move = {} it's score = {} {}".format(move, tmp_score, 'Max' if maximizing_player else 'MIN'))
                     # if there is no best_move, save the first move
                     alpha = max(tmp_score, alpha)
-                    if(beta <= alpha):
-                        best_score = tmp_score
-                        break
                     if(best_move == None or tmp_score > best_score):
                         best_score = tmp_score
                         best_move = move
-            else:
-                best_score = float("inf")
-                # for move in tmp_moves:
-                for move in legal_moves:
-                    tmp_score, _ = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, not maximizing_player)
-                    print("alpha beta attempted move = {} it's score = {} {}".format(move, tmp_score, 'Max' if maximizing_player else 'MIN'))
-                    # if there is no best_move, save the first move
-                    beta = min(tmp_score, beta)
                     if(beta <= alpha):
                         best_score = tmp_score
                         break
+            else:
+                best_score = float("inf")
+                for move in legal_moves:
+                    tmp_score, _ = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, not maximizing_player)
+                    # if there is no best_move, save the first move
+                    beta = min(tmp_score, beta)
                     if(best_move == None or tmp_score < best_score):
                         best_score = tmp_score
                         best_move = move
+                    if(beta <= alpha):
+                        best_score = tmp_score
+                        break
 
         if(depth == 1):
             if maximizing_player:
                 best_score = float("-inf")
-                # for move in tmp_moves:
                 for move in legal_moves:
                     tmp_score = self.score(game.forecast_move(move), game.active_player)
-                    print("alpha beta depth 1 move = {} it's score = {} {}".format(move, tmp_score, 'Max' if maximizing_player else 'MIN'))
-
                     alpha = max(tmp_score, alpha)
-                    if(beta <= alpha):
-                        best_score = tmp_score
-                        break
                     if (best_move == None or tmp_score > best_score):
                         best_score = tmp_score
                         best_move = move
-            else:
-                best_score = float("-inf")
-                # for move in tmp_moves:
-                for move in legal_moves:
-                    #find my score after the opponent moves
-                    tmp_score = self.score(game.forecast_move(move), game.inactive_player)
-                    print("alpha beta depth 1 move = {} it's score = {} {}".format(move, tmp_score, 'Max' if maximizing_player else 'MIN'))
-                    beta = min(tmp_score, beta)
                     if(beta <= alpha):
                         best_score = tmp_score
                         break
+            else:
+                best_score = float("-inf")
+                for move in legal_moves:
+                    #find my score after the opponent moves
+                    tmp_score = self.score(game.forecast_move(move), game.inactive_player)
+                    beta = min(tmp_score, beta)
                     #keep the lowest score, because that is what the opponent will do
                     if (best_move == None or tmp_score < best_score):
                         best_score = tmp_score
                         best_move = move
-                # print("end depth 0 else opponent best_move={} best_score={}".format(best_move, best_score))
-
-        print("alpha beta end depth {} {} best move={} best_score={}".format(depth, 'Max' if maximizing_player else 'MIN', best_move, best_score))
+                    if(beta <= alpha):
+                        best_score = tmp_score
+                        break
         return best_score, best_move

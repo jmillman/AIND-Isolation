@@ -34,7 +34,8 @@ from game_agent import CustomPlayer
 from game_agent import custom_score
 
 NUM_MATCHES = 5  # number of matches against each opponent
-# NUM_MATCHES = 1000  # number of matches against each opponent
+#I used the number 250 to test 1000 games per scoring funciton
+# NUM_MATCHES = 250  # number of matches against each opponent
 TIME_LIMIT = 150  # number of milliseconds before timeout
 
 TIMEOUT_WARNING = "One or more agents lost a match this round due to " + \
@@ -178,7 +179,8 @@ def main():
         print("----------")
         print("{!s:<15}{:>10.2f}%".format(agentUT.name, win_ratio))
 
-def main():
+#I used this function to test several heuristic functions at the same time.  The regular version is above
+def main_mine():
 
     HEURISTICS = [("Null", null_score),
                   ("Open", open_move_score),
@@ -213,13 +215,17 @@ def main():
     from game_agent import custom_score_divide_own_by_opponent
     from game_agent import custom_score_my_open_moves
     from game_agent import custom_score_simple
+    from game_agent import custom_score_diff_in_mine_and_double_opponent_closest_to_center_tie
+    from game_agent import custom_score_diff_in_opp_and_double_mine
     test_agents = [
-        # Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
+        Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved"),
         Agent(CustomPlayer(score_fn=custom_score_my_open_moves, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_simple, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent, **CUSTOM_ARGS), "Student"),
+        Agent(CustomPlayer(score_fn=custom_score_diff_in_opp_and_double_mine, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent_chase_incase_of_tie, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent_run_away_incase_of_tie, **CUSTOM_ARGS), "Student"),
+        Agent(CustomPlayer(score_fn=custom_score_diff_in_mine_and_double_opponent_closest_to_center_tie, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_divide_own_by_opponent, **CUSTOM_ARGS), "Student"),
         Agent(CustomPlayer(score_fn=custom_score_diff_in_free_percent_of_board, **CUSTOM_ARGS), "Student")
     ]
@@ -239,4 +245,4 @@ def main():
         print("{!s:<15}{:>10.2f}%".format(agentUT.name, win_ratio))
 
 if __name__ == "__main__":
-    main()
+    main_mine()
